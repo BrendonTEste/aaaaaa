@@ -1,4 +1,4 @@
-import React from 'react';
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, User, Tag, Play, ArrowRight, X, Clock } from 'lucide-react';
