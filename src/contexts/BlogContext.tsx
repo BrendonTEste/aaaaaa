@@ -1,6 +1,17 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { BlogPost } from '../types/blog';
 
+interface BlogStats {
+  totalPosts: number;
+  totalViews: number;
+  totalComments: number;
+  viewsByMonth: Array<{ month: string; views: number }>;
+  postsByCategory: Array<{ category: string; count: number }>;
+  topPosts: Array<{ title: string; views: number }>;
+  visitorsByRegion: Array<{ region: string; visitors: number; percentage: number }>;
+  dailyVisitors: Array<{ date: string; visitors: number }>;
+}
+
 interface BlogContextType {
   posts: BlogPost[];
   addPost: (post: Omit<BlogPost, 'id' | 'publishedAt' | 'updatedAt' | 'slug'>) => void;
@@ -8,6 +19,8 @@ interface BlogContextType {
   deletePost: (id: string) => void;
   getPost: (id: string) => BlogPost | undefined;
   getPublishedPosts: () => BlogPost[];
+  getBlogStats: () => BlogStats;
+  incrementPostViews: (postId: string) => void;
 }
 
 const BlogContext = createContext<BlogContextType | undefined>(undefined);
@@ -114,6 +127,35 @@ Estes casos demonstram que o investimento em tecnologia Vaca Roxa não é apenas
   }
 ];
 
+// Mock analytics data
+const mockAnalytics = {
+  viewsByMonth: [
+    { month: 'Jan', views: 1200 },
+    { month: 'Fev', views: 1800 },
+    { month: 'Mar', views: 2400 },
+    { month: 'Abr', views: 2100 },
+    { month: 'Mai', views: 2800 },
+    { month: 'Jun', views: 3200 }
+  ],
+  visitorsByRegion: [
+    { region: 'São Paulo', visitors: 1250, percentage: 35 },
+    { region: 'Rio de Janeiro', visitors: 890, percentage: 25 },
+    { region: 'Minas Gerais', visitors: 620, percentage: 17 },
+    { region: 'Rio Grande do Sul', visitors: 445, percentage: 12 },
+    { region: 'Paraná', visitors: 267, percentage: 7 },
+    { region: 'Outros', visitors: 178, percentage: 4 }
+  ],
+  dailyVisitors: [
+    { date: '01/12', visitors: 145 },
+    { date: '02/12', visitors: 167 },
+    { date: '03/12', visitors: 189 },
+    { date: '04/12', visitors: 203 },
+    { date: '05/12', visitors: 178 },
+    { date: '06/12', visitors: 234 },
+    { date: '07/12', visitors: 267 }
+  ]
+};
+
 const generateSlug = (title: string): string => {
   return title
     .toLowerCase()
@@ -127,6 +169,10 @@ const generateSlug = (title: string): string => {
 
 export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
+  const [postViews, setPostViews] = useState<Record<string, number>>({
+    '1': 1250,
+    '2': 890
+  });
 
   const addPost = (postData: Omit<BlogPost, 'id' | 'publishedAt' | 'updatedAt' | 'slug'>) => {
     const now = new Date().toISOString();
@@ -160,6 +206,49 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
     return posts.filter(post => post.status === 'published');
   };
 
+  const incrementPostViews = (postId: string) => {
+    setPostViews(prev => ({
+      ...prev,
+      [postId]: (prev[postId] || 0) + 1
+    }));
+  };
+
+  const getBlogStats = (): BlogStats => {
+    const publishedPosts = getPublishedPosts();
+    const totalViews = Object.values(postViews).reduce((sum, views) => sum + views, 0);
+    
+    // Calculate posts by category
+    const categoryCount: Record<string, number> = {};
+    publishedPosts.forEach(post => {
+      categoryCount[post.category] = (categoryCount[post.category] || 0) + 1;
+    });
+    
+    const postsByCategory = Object.entries(categoryCount).map(([category, count]) => ({
+      category,
+      count
+    }));
+    
+    // Top posts by views
+    const topPosts = publishedPosts
+      .map(post => ({
+        title: post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title,
+        views: postViews[post.id] || 0
+      }))
+      .sort((a, b) => b.views - a.views)
+      .slice(0, 5);
+    
+    return {
+      totalPosts: publishedPosts.length,
+      totalViews,
+      totalComments: 47, // Mock data
+      viewsByMonth: mockAnalytics.viewsByMonth,
+      postsByCategory,
+      topPosts,
+      visitorsByRegion: mockAnalytics.visitorsByRegion,
+      dailyVisitors: mockAnalytics.dailyVisitors
+    };
+  };
+
   return (
     <BlogContext.Provider value={{
       posts,
@@ -167,7 +256,9 @@ export const BlogProvider: React.FC<BlogProviderProps> = ({ children }) => {
       updatePost,
       deletePost,
       getPost,
-      getPublishedPosts
+      getPublishedPosts,
+      getBlogStats,
+      incrementPostViews
     }}>
       {children}
     </BlogContext.Provider>

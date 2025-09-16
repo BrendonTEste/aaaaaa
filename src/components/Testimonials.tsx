@@ -11,7 +11,6 @@ const Testimonials = () => {
       name: "Carlos Silva",
       role: "Diretor de Qualidade",
       company: "LaticíniosPremium",
-      content: "O MilkTech revolucionou nosso controle de qualidade. A precisão e velocidade das análises nos permitiram otimizar toda nossa produção.",
       content: t('testimonial1'),
       rating: 5,
       avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2"
@@ -28,7 +27,6 @@ const Testimonials = () => {
       name: "Roberto Santos",
       role: "CEO",
       company: "MilkCorp",
-      content: "Investimento que se pagou em 3 meses. O MilkTech não é apenas uma ferramenta, é um diferencial competitivo no nosso mercado.",
       content: t('testimonial3'),
       rating: 5,
       avatar: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2"

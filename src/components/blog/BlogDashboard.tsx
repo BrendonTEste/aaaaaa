@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, Calendar, User, Tag, LogOut, Home } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, Calendar, User, Tag, LogOut, Home, BarChart3 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useBlog } from '../../contexts/BlogContext';
 import { BlogPost } from '../../types/blog';
 import PostEditor from './PostEditor';
+import BlogAnalytics from './BlogAnalytics';
 
 const BlogDashboard = () => {
   const { user, logout } = useAuth();
   const { posts, deletePost } = useBlog();
-  const [currentView, setCurrentView] = useState<'list' | 'create' | 'edit'>('list');
+  const [currentView, setCurrentView] = useState<'list' | 'create' | 'edit' | 'analytics'>('list');
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
 
   const handleEdit = (post: BlogPost) => {
@@ -46,6 +47,10 @@ const BlogDashboard = () => {
     return <PostEditor post={editingPost} onBack={handleBackToList} />;
   }
 
+  if (currentView === 'analytics') {
+    return <BlogAnalytics onBack={handleBackToList} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -64,6 +69,13 @@ const BlogDashboard = () => {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-gray-600">Olá, {user?.name}</span>
+              <button
+                onClick={() => setCurrentView('analytics')}
+                className="flex items-center px-4 py-2 text-gray-600 hover:text-purple-600 transition-colors"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Analytics
+              </button>
               <button
                 onClick={() => window.location.href = '/'}
                 className="flex items-center px-4 py-2 text-gray-600 hover:text-purple-600 transition-colors"
@@ -95,15 +107,26 @@ const BlogDashboard = () => {
             <h2 className="text-xl font-semibold text-gray-900">Gerenciar Posts</h2>
             <p className="text-gray-600">Total de {posts.length} posts</p>
           </div>
-          <motion.button
-            onClick={() => setCurrentView('create')}
-            className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-purple-500/25 flex items-center"
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Novo Post
-          </motion.button>
+          <div className="flex items-center space-x-4">
+            <motion.button
+              onClick={() => setCurrentView('create')}
+              className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 shadow-lg hover:shadow-purple-500/25 flex items-center"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Novo Post
+            </motion.button>
+            <motion.button
+              onClick={() => setCurrentView('analytics')}
+              className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-blue-500/25 flex items-center"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <BarChart3 className="w-5 h-5 mr-2" />
+              Ver Analytics
+            </motion.button>
+          </div>
         </motion.div>
 
         {/* Posts List */}

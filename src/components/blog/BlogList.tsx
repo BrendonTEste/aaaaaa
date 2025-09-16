@@ -1,11 +1,13 @@
 import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, User, Tag, Play, ArrowRight } from 'lucide-react';
+import { Calendar, User, Tag, Play, ArrowRight, X, Clock } from 'lucide-react';
 import { useBlog } from '../../contexts/BlogContext';
 
 const BlogList = () => {
-  const { getPublishedPosts } = useBlog();
+  const { getPublishedPosts, incrementPostViews } = useBlog();
   const posts = getPublishedPosts();
+  const [selectedPost, setSelectedPost] = useState<any>(null);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -20,8 +22,39 @@ const BlogList = () => {
     return content.substring(0, maxLength) + '...';
   };
 
+  const handleReadMore = (post: any) => {
+    setSelectedPost(post);
+    incrementPostViews(post.id);
+  };
+
+  const closeModal = () => {
+    setSelectedPost(null);
+  };
+
+  const formatContent = (content: string) => {
+    return content.split('\n').map((paragraph, index) => {
+      if (paragraph.startsWith('## ')) {
+        return <h2 key={index} className="text-2xl font-bold text-gray-900 mt-6 mb-4">{paragraph.replace('## ', '')}</h2>;
+      }
+      if (paragraph.startsWith('# ')) {
+        return <h1 key={index} className="text-3xl font-bold text-gray-900 mt-8 mb-6">{paragraph.replace('# ', '')}</h1>;
+      }
+      if (paragraph.trim() === '') {
+        return <br key={index} />;
+      }
+      if (paragraph.startsWith('- ')) {
+        return <li key={index} className="ml-6 mb-2">{paragraph.replace('- ', '')}</li>;
+      }
+      if (/^\d+\./.test(paragraph.trim())) {
+        return <li key={index} className="ml-6 mb-2 list-decimal">{paragraph.replace(/^\d+\.\s*/, '')}</li>;
+      }
+      return <p key={index} className="mb-4 leading-relaxed text-gray-700">{paragraph}</p>;
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white">
+    <>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white">
       {/* Header */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
@@ -138,6 +171,7 @@ const BlogList = () => {
 
                     {/* Read More */}
                     <motion.button
+                      onClick={() => handleReadMore(post)}
                       className="flex items-center text-purple-600 font-semibold hover:text-purple-700 transition-colors group"
                       whileHover={{ x: 5 }}
                     >
@@ -176,7 +210,127 @@ const BlogList = () => {
           </motion.button>
         </div>
       </motion.section>
-    </div>
+      </div>
+
+      {/* Modal for full post */}
+      {selectedPost && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex justify-between items-start">
+              <div className="flex-1">
+                <div className="flex items-center space-x-4 mb-3">
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {selectedPost.category}
+                  </span>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <Calendar className="w-4 h-4 mr-1" />
+                    {formatDate(selectedPost.publishedAt)}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <User className="w-4 h-4 mr-1" />
+                    {selectedPost.author}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <Clock className="w-4 h-4 mr-1" />
+                    {Math.ceil(selectedPost.content.length / 1000)} min de leitura
+                  </div>
+                </div>
+                <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+                  {selectedPost.title}
+                </h1>
+              </div>
+              <button
+                onClick={closeModal}
+                className="ml-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="overflow-y-auto max-h-[calc(90vh-200px)]">
+              {/* Featured Image */}
+              {selectedPost.featuredImage && (
+                <div className="relative h-64 md:h-80">
+                  <img
+                    src={selectedPost.featuredImage}
+                    alt={selectedPost.title}
+                    className="w-full h-full object-cover"
+                  />
+                  {selectedPost.videoUrl && (
+                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                      <button
+                        onClick={() => window.open(selectedPost.videoUrl, '_blank')}
+                        className="w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all"
+                      >
+                        <Play className="w-10 h-10 text-purple-600 ml-1" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="p-6">
+                {/* Excerpt */}
+                <div className="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6">
+                  <p className="text-lg text-purple-800 font-medium italic">
+                    {selectedPost.excerpt}
+                  </p>
+                </div>
+
+                {/* Content */}
+                <div className="prose prose-lg max-w-none">
+                  {formatContent(selectedPost.content)}
+                </div>
+
+                {/* Tags */}
+                {selectedPost.tags.length > 0 && (
+                  <div className="mt-8 pt-6 border-t border-gray-200">
+                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Tags:</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedPost.tags.map((tag: string, index: number) => (
+                        <span
+                          key={index}
+                          className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-4 flex justify-between items-center">
+              <div className="text-sm text-gray-600">
+                Publicado em {formatDate(selectedPost.publishedAt)} por {selectedPost.author}
+              </div>
+              <button
+                onClick={closeModal}
+                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </>
   );
 };
 

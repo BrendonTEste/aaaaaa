@@ -134,8 +134,7 @@ const Hero = () => {
                     >
                       <Beef className="w-10 h-10 text-white" />
                     </motion.div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-2">Sistema MilkTech</h3>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">Sistema Vaca Roxa</h3>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">Sistema Vaca Roxa</h3>
                   </div>
                 </div>
               </div>
