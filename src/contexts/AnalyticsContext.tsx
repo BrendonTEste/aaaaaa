@@ -32,6 +32,13 @@ interface AnalyticsData {
   pageLoadTime: number;
   mobileScore: number;
   desktopScore: number;
+  
+  // Testes A/B
+  abTests: Array<{ version: string; visitors: number; conversions: number; conversionRate: number }>;
+  
+  // Feedback
+  npsScore: number;
+  userFeedback: Array<{ rating: number; comment: string; date: string }>;
 }
 
 interface AnalyticsContextType {
@@ -42,6 +49,8 @@ interface AnalyticsContextType {
   trackScrollDepth: (depth: number) => void;
   trackTimeOnPage: (seconds: number) => void;
   getAnalyticsSummary: () => any;
+  incrementVisits: () => void;
+  trackConversion: () => void;
 }
 
 const AnalyticsContext = createContext<AnalyticsContextType | undefined>(undefined);
@@ -141,6 +150,7 @@ const initialAnalytics: AnalyticsData = {
   
   hourlyData: [
     { hour: '00h', visits: 234 },
+    { hour: '03h', visits: 156 },
     { hour: '06h', visits: 456 },
     { hour: '09h', visits: 1234 },
     { hour: '12h', visits: 1567 },
@@ -151,7 +161,21 @@ const initialAnalytics: AnalyticsData = {
   
   pageLoadTime: 2.3,
   mobileScore: 87,
-  desktopScore: 94
+  desktopScore: 94,
+  
+  abTests: [
+    { version: 'Versão A (Original)', visitors: 7923, conversions: 253, conversionRate: 3.2 },
+    { version: 'Versão B (Nova)', visitors: 7924, conversions: 254, conversionRate: 3.2 }
+  ],
+  
+  npsScore: 8.4,
+  userFeedback: [
+    { rating: 9, comment: 'Sistema muito intuitivo e eficiente!', date: '2024-01-15' },
+    { rating: 8, comment: 'Ótima solução para nossa empresa.', date: '2024-01-14' },
+    { rating: 10, comment: 'Revolucionou nosso controle de qualidade.', date: '2024-01-13' },
+    { rating: 7, comment: 'Bom produto, mas poderia ter mais funcionalidades.', date: '2024-01-12' },
+    { rating: 9, comment: 'Suporte excelente e produto de qualidade.', date: '2024-01-11' }
+  ]
 };
 
 export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }) => {
@@ -161,6 +185,14 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
     setAnalytics(prev => ({
       ...prev,
       totalVisits: prev.totalVisits + 1
+    }));
+  };
+
+  const incrementVisits = () => {
+    setAnalytics(prev => ({
+      ...prev,
+      totalVisits: prev.totalVisits + 1,
+      uniqueVisitors: prev.uniqueVisitors + 1
     }));
   };
 
@@ -187,8 +219,14 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
     }));
   };
 
+  const trackConversion = () => {
+    setAnalytics(prev => ({
+      ...prev,
+      leadsGenerated: prev.leadsGenerated + 1
+    }));
+  };
+
   const trackScrollDepth = (depth: number) => {
-    // Implementação do tracking de scroll
     console.log(`Usuário rolou até ${depth}% da página`);
   };
 
@@ -223,7 +261,9 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({ children }
       trackLead,
       trackScrollDepth,
       trackTimeOnPage,
-      getAnalyticsSummary
+      getAnalyticsSummary,
+      incrementVisits,
+      trackConversion
     }}>
       {children}
     </AnalyticsContext.Provider>
