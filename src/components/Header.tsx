@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Beef, Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { Beef, Menu, X, Globe, ChevronDown, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAnalytics } from '../contexts/AnalyticsContext';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const { currentLanguage, setLanguage, t } = useLanguage();
+  const { trackCTAClick } = useAnalytics();
 
   const languages = [
     { code: 'pt', name: 'Português', flag: '🇧🇷' },
@@ -20,6 +23,21 @@ const Header = () => {
     setIsLanguageOpen(false);
     console.log('Idioma alterado para:', langCode);
   };
+
+  const handleDemoClick = () => {
+    trackCTAClick('Solicitar Demo (Header)');
+    // Scroll to CTA section
+    document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  if (showAnalytics) {
+    const LandingAnalytics = React.lazy(() => import('./analytics/LandingAnalytics'));
+    return (
+      <React.Suspense fallback={<div>Carregando...</div>}>
+        <LandingAnalytics onBack={() => setShowAnalytics(false)} />
+      </React.Suspense>
+    );
+  }
 
   return (
     <motion.header 
@@ -46,7 +64,7 @@ const Header = () => {
               { key: 'howItWorks', href: '#como-funciona' },
               { key: 'benefits', href: '#beneficios' },
               { key: 'testimonials', href: '#depoimentos' },
-              { key: 'blog', href: '/blog' }
+              { key: 'blog', href: '/blog' },
             ].map((item, index) => (
               <motion.a
                 key={item.key}
@@ -60,6 +78,19 @@ const Header = () => {
                 {t(item.key as any)}
               </motion.a>
             ))}
+            
+            {/* Analytics Button */}
+            <motion.button
+              onClick={() => setShowAnalytics(true)}
+              className="flex items-center text-gray-700 hover:text-purple-600 transition-colors font-medium"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <BarChart3 className="w-4 h-4 mr-1" />
+              Analytics
+            </motion.button>
             
             {/* Language Selector */}
             <div className="relative">
@@ -95,6 +126,7 @@ const Header = () => {
             </div>
             
             <motion.button 
+              onClick={handleDemoClick}
               className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-purple-500/25"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -128,7 +160,7 @@ const Header = () => {
                 { key: 'howItWorks', href: '#como-funciona' },
                 { key: 'benefits', href: '#beneficios' },
                 { key: 'testimonials', href: '#depoimentos' },
-                { key: 'blog', href: '/blog' }
+                { key: 'blog', href: '/blog' },
               ].map((item) => (
                 <a
                   key={item.key}
@@ -139,6 +171,13 @@ const Header = () => {
                   {t(item.key as any)}
                 </a>
               ))}
+              <button
+                onClick={() => setShowAnalytics(true)}
+                className="text-gray-700 hover:text-purple-600 transition-colors font-medium text-left flex items-center"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Analytics
+              </button>
               <div className="border-t border-purple-100 pt-4">
                 <p className="text-gray-600 text-sm mb-2">{t('language')}:</p>
                 {languages.map((language) => (
@@ -152,7 +191,10 @@ const Header = () => {
                   </button>
                 ))}
               </div>
-              <button className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-lg font-semibold text-left">
+              <button 
+                onClick={handleDemoClick}
+                className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-lg font-semibold text-left"
+              >
                 {t('requestDemo')}
               </button>
             </div>
