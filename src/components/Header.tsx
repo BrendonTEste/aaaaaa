@@ -1,208 +1,149 @@
-import React, { useState } from 'react';
-import { Beef, Menu, X, Globe, ChevronDown, BarChart3 } from 'lucide-react';
+import React from 'react';
+import { ArrowRight, Play, CheckCircle, Beef, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useAnalytics } from '../contexts/AnalyticsContext';
 
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
-  const { currentLanguage, setLanguage, t } = useLanguage();
-  const { trackCTAClick } = useAnalytics();
+const Hero = () => {
+  const { t } = useLanguage();
 
-  const languages = [
-    { code: 'pt', name: 'Português', flag: '🇧🇷' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' }
-  ];
-
-  const handleLanguageChange = (langCode: string) => {
-    setLanguage(langCode as any);
-    setIsLanguageOpen(false);
-    console.log('Idioma alterado para:', langCode);
+  const handleWatchVideo = () => {
+    // Abre um vídeo demonstrativo em nova aba
+    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
   };
-
-  const handleDemoClick = () => {
-    trackCTAClick('Solicitar Demo (Header)');
-    // Scroll to CTA section
-    document.getElementById('cta')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  if (showAnalytics) {
-    const LandingAnalytics = React.lazy(() => import('./analytics/LandingAnalytics'));
-    return (
-      <React.Suspense fallback={<div>Carregando...</div>}>
-        <LandingAnalytics onBack={() => setShowAnalytics(false)} />
-      </React.Suspense>
-    );
-  }
 
   return (
-    <motion.header 
-      initial={{ y: -100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="bg-white/95 backdrop-blur-sm border-b border-purple-100 sticky top-0 z-50"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          <motion.div 
-            className="flex items-center space-x-2"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg flex items-center justify-center">
-              <Beef className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Vaca Roxa</span>
-          </motion.div>
-          
-          <nav className="hidden md:flex items-center space-x-8">
-            {[
-              { key: 'howItWorks', href: '#como-funciona' },
-              { key: 'benefits', href: '#beneficios' },
-              { key: 'testimonials', href: '#depoimentos' },
-              { key: 'blog', href: '/blog' },
-            ].map((item, index) => (
-              <motion.a
-                key={item.key}
-                href={item.href}
-                className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index, duration: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                {t(item.key as any)}
-              </motion.a>
-            ))}
-            
-            {/* Analytics Button */}
-            <motion.button
-              onClick={() => setShowAnalytics(true)}
-              className="flex items-center text-gray-700 hover:text-purple-600 transition-colors font-medium"
-              initial={{ opacity: 0, y: -20 }}
+    <section className="relative bg-gradient-to-br from-purple-50 via-white to-purple-100 pt-20 pb-32 overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute top-0 left-0 w-full h-full">
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, 180, 360]
+          }}
+          transition={{ 
+            duration: 20,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+        <motion.div 
+          className="absolute top-3/4 right-1/4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"
+          animate={{ 
+            scale: [1.2, 1, 1.2],
+            rotate: [360, 180, 0]
+          }}
+          transition={{ 
+            duration: 25,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+        />
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center lg:text-left">
+            <motion.div 
+              className="inline-flex items-center bg-purple-100 text-purple-700 px-4 py-2 rounded-full text-sm font-semibold mb-6"
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
-              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.6 }}
             >
-              <BarChart3 className="w-4 h-4 mr-1" />
-              Analytics
-            </motion.button>
+              <CheckCircle className="w-4 h-4 mr-2" />
+              {t('advancedTech')}
+            </motion.div>
             
-            {/* Language Selector */}
-            <div className="relative">
-              <motion.button
-                className="flex items-center space-x-2 text-gray-700 hover:text-purple-600 transition-colors font-medium"
-                onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                whileHover={{ scale: 1.05 }}
+            <motion.h1 
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              {t('heroTitle')}
+              <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent"> {t('heroTitleHighlight')}</span>
+            </motion.h1>
+            
+            <motion.p 
+              className="text-xl text-gray-600 mb-8 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              {t('heroDescription')}
+            </motion.p>
+            
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <motion.button 
+                className="group bg-gradient-to-r from-purple-600 to-purple-700 text-white px-8 py-4 rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-200 font-semibold text-lg shadow-lg hover:shadow-purple-500/25 flex items-center justify-center"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Globe className="w-4 h-4" />
-                <span>{languages.find(lang => lang.code === currentLanguage)?.flag}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
+                {t('requestDemonstration')}
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </motion.button>
               
-              {isLanguageOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[150px] z-50"
-                >
-                  {languages.map((language) => (
-                    <motion.button
-                      key={language.code}
-                      className="w-full px-4 py-2 text-left hover:bg-purple-50 transition-colors flex items-center space-x-2"
-                      onClick={() => handleLanguageChange(language.code)}
-                      whileHover={{ backgroundColor: '#f3f4f6' }}
-                    >
-                      <span>{language.flag}</span>
-                      <span className="text-gray-700">{language.name}</span>
-                    </motion.button>
-                  ))}
-                </motion.div>
-              )}
-            </div>
-            
-            <motion.button 
-              onClick={handleDemoClick}
-              className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-purple-500/25"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4, duration: 0.5 }}
+              <motion.button 
+                className="group bg-white text-purple-700 px-8 py-4 rounded-xl border-2 border-purple-200 hover:border-purple-300 transition-all duration-200 font-semibold text-lg flex items-center justify-center"
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={handleWatchVideo}
+              >
+                <Play className="mr-2 w-5 h-5" />
+                {t('watchHowWorks')}
+                <ExternalLink className="ml-2 w-4 h-4 opacity-60" />
+              </motion.button>
+            </motion.div>
+          </div>
+          
+          <motion.div 
+            className="relative"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, delay: 0.3 }}
+          >
+            <motion.div 
+              className="bg-gradient-to-br from-purple-100 to-purple-200 rounded-3xl p-8 shadow-2xl"
+              animate={{ 
+                rotate: [3, 6, 3],
+                y: [0, -10, 0]
+              }}
+              transition={{ 
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              whileHover={{ 
+                rotate: 6,
+                scale: 1.02,
+                transition: { duration: 0.3 }
+              }}
             >
-              {t('requestDemo')}
-            </motion.button>
-          </nav>
-
-          <motion.button 
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isMenuOpen ? <X className="w-6 h-6 text-gray-700" /> : <Menu className="w-6 h-6 text-gray-700" />}
-          </motion.button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden py-4 border-t border-purple-100"
-          >
-            <div className="flex flex-col space-y-4">
-              {[
-                { key: 'howItWorks', href: '#como-funciona' },
-                { key: 'benefits', href: '#beneficios' },
-                { key: 'testimonials', href: '#depoimentos' },
-                { key: 'blog', href: '/blog' },
-              ].map((item) => (
-                <a
-                  key={item.key}
-                  href={item.href}
-                  className="text-gray-700 hover:text-purple-600 transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {t(item.key as any)}
-                </a>
-              ))}
-              <button
-                onClick={() => setShowAnalytics(true)}
-                className="text-gray-700 hover:text-purple-600 transition-colors font-medium text-left flex items-center"
-              >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Analytics
-              </button>
-              <div className="border-t border-purple-100 pt-4">
-                <p className="text-gray-600 text-sm mb-2">{t('language')}:</p>
-                {languages.map((language) => (
-                  <button
-                    key={language.code}
-                    className="w-full text-left px-2 py-1 text-gray-700 hover:text-purple-600 transition-colors flex items-center space-x-2"
-                    onClick={() => handleLanguageChange(language.code)}
-                  >
-                    <span>{language.flag}</span>
-                    <span>{language.name}</span>
-                  </button>
-                ))}
+              <div className="bg-white rounded-2xl p-6 shadow-lg">
+                <div className="h-64 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <motion.div 
+                      className="w-20 h-20 bg-gradient-to-r from-purple-600 to-purple-700 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Beef className="w-10 h-10 text-white" />
+                    </motion.div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-2">Sistema Vaca Roxa</h3>
+                  </div>
+                </div>
               </div>
-              <button 
-                onClick={handleDemoClick}
-                className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-lg font-semibold text-left"
-              >
-                {t('requestDemo')}
-              </button>
-            </div>
+            </motion.div>
           </motion.div>
-        )}
+        </div>
       </div>
-    </motion.header>
+    </section>
   );
 };
 
-export default Header;
+export default Hero;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { AuthProvider } from './contexts/AuthContext';
 import { BlogProvider } from './contexts/BlogContext';
+import { AnalyticsProvider } from './contexts/AnalyticsContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import HowItWorks from './components/HowItWorks';
@@ -19,11 +20,13 @@ function App() {
   if (currentPath === '/blog') {
     return (
       <AuthProvider>
-        <BlogProvider>
-          <div className="min-h-screen bg-white">
-            <BlogList />
-          </div>
-        </BlogProvider>
+        <AnalyticsProvider>
+          <BlogProvider>
+            <div className="min-h-screen bg-white">
+              <BlogList />
+            </div>
+          </BlogProvider>
+        </AnalyticsProvider>
       </AuthProvider>
     );
   }
@@ -31,27 +34,31 @@ function App() {
   if (currentPath === '/admin') {
     return (
       <AuthProvider>
-        <BlogProvider>
-          <BlogApp />
-        </BlogProvider>
+        <AnalyticsProvider>
+          <BlogProvider>
+            <BlogApp />
+          </BlogProvider>
+        </AnalyticsProvider>
       </AuthProvider>
     );
   }
 
   return (
     <AuthProvider>
-      <BlogProvider>
-        <div className="min-h-screen bg-white">
-          <Header />
-          <Hero />
-          <HowItWorks />
-          <PartnersMarquee />
-          <Benefits />
-          <Testimonials />
-          <CTA />
-          <Footer />
-        </div>
-      </BlogProvider>
+      <AnalyticsProvider>
+        <BlogProvider>
+          <div className="min-h-screen bg-white">
+            <Header />
+            <Hero />
+            <HowItWorks />
+            <PartnersMarquee />
+            <Benefits />
+            <Testimonials />
+            <CTA />
+            <Footer />
+          </div>
+        </BlogProvider>
+      </AnalyticsProvider>
     </AuthProvider>
   );
 }

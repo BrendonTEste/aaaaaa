@@ -3,11 +3,12 @@ import { motion } from 'framer-motion';
 import { 
   ArrowLeft, TrendingUp, Eye, Users, Target, Clock, 
   MousePointer, Smartphone, Globe, BarChart3, Zap,
-  MapPin, Monitor, Activity, Gauge
+  MapPin, Monitor, Activity, Gauge, MessageCircle,
+  ThumbsUp, TestTube, Wifi
 } from 'lucide-react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area, FunnelChart, Funnel, LabelList
+  PieChart, Pie, Cell, BarChart, Bar, AreaChart, Area
 } from 'recharts';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
 
@@ -48,7 +49,7 @@ const LandingAnalytics: React.FC<LandingAnalyticsProps> = ({ onBack }) => {
               <ArrowLeft className="w-5 h-5 mr-2" />
               Voltar
             </motion.button>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics da Landing Page</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Analytics da Landing Page - Vaca Roxa</h1>
           </div>
         </div>
       </motion.header>
@@ -58,7 +59,7 @@ const LandingAnalytics: React.FC<LandingAnalyticsProps> = ({ onBack }) => {
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8"
         >
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between">
@@ -136,22 +137,6 @@ const LandingAnalytics: React.FC<LandingAnalyticsProps> = ({ onBack }) => {
               </div>
               <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
                 <Clock className="w-5 h-5 text-orange-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Leads Gerados</p>
-                <p className="text-2xl font-bold text-gray-900">{formatNumber(analytics.leadsGenerated)}</p>
-                <p className="text-sm text-green-600 flex items-center mt-1">
-                  <TrendingUp className="w-4 h-4 mr-1" />
-                  +18.5%
-                </p>
-              </div>
-              <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-indigo-600" />
               </div>
             </div>
           </div>
@@ -445,7 +430,7 @@ const LandingAnalytics: React.FC<LandingAnalyticsProps> = ({ onBack }) => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1.0 }}
-          className="bg-white rounded-xl shadow-lg p-6"
+          className="bg-white rounded-xl shadow-lg p-6 mb-8"
         >
           <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center">
             <MousePointer className="w-5 h-5 mr-2 text-red-600" />
@@ -464,6 +449,37 @@ const LandingAnalytics: React.FC<LandingAnalyticsProps> = ({ onBack }) => {
                 <p className="text-xs text-gray-600">{element.percentage}% dos cliques</p>
               </div>
             ))}
+          </div>
+        </motion.div>
+
+        {/* Resumo Executivo */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 1.1 }}
+          className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-xl shadow-lg p-8 text-white"
+        >
+          <h3 className="text-2xl font-bold mb-6 flex items-center">
+            <BarChart3 className="w-6 h-6 mr-3" />
+            Resumo Executivo
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-2">{formatNumber(analytics.leadsGenerated)}</div>
+              <div className="text-purple-200">Leads Gerados</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-2">{analytics.conversionRate}%</div>
+              <div className="text-purple-200">Taxa de Conversão</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-2">{analytics.leadSources[0]?.source}</div>
+              <div className="text-purple-200">Principal Fonte</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold mb-2">R$ {(analytics.leadsGenerated * 2500).toLocaleString()}</div>
+              <div className="text-purple-200">Valor Estimado</div>
+            </div>
           </div>
         </motion.div>
       </div>
